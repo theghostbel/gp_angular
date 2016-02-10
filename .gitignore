@@ -1,0 +1,7 @@
+*.swp
+*.pyc
+.idea
+.gitignore
+.gitmodules
+dist/
+firstPrj/bower_components/
