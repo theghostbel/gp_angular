@@ -3,30 +3,32 @@
 angular.module('gpApp')
 
     .controller('summController', ['$scope', '$stateParams', '$state', 'currencyService',
-        function($scope, $stateParams, $state, currencyService) {
-        console.log('arguments: ', arguments);
-        $scope.updateUrl = function(){
-            $state.go('sum', {f: $scope.firstN, s: $scope.secondN});
-        };
+    function($scope, $stateParams, $state, currencyService) {
         $scope.firstN = parseInt($stateParams.f);
-        $scope.secondN = parseInt($stateParams.s);
+        $scope.secondN = parseInt($stateParams.s)
+        $scope.selectedCurrencyCode = '';
+        $scope.result = 0;
 
         currencyService.getCurrency().$promise.then(function(curr){
             console.log('Curr: ', curr);
             $scope.selectedCurrency = 'AUD';
             $scope.rates = curr.rates;
             $scope.onChangeCurrency('AUD');
+            
+            $scope.selectedCurrencyCode = 'AUD';
         });
+        
+        $scope.$watch('selectedCurrencyCode', function(newValue){
+            if (!newValue) return
+            var selectedRate = _.findWhere($scope.rates, {code: selectedCurrencyCode})
+            $scope.result = selectedRate * ($scope.firstN + $scope.secondN)
+        })
 
-        $scope.onChangeCurrency = function(newCurrency){
-            $scope.selectedRate = $scope.rates[newCurrency];
-            $scope.selectedCurrency = newCurrency;
+        $scope.updateUrl = function(){
+            $state.go('sum', {f: $scope.firstN, s: $scope.secondN});
         };
 
-        $scope.getConverted = function(){
-            return (($scope.firstN + $scope.secondN)*$scope.selectedRate).toFixed(2);
-        };
-
+        
     }])
 
     .controller('funnyGame', ['$scope', function($scope){
